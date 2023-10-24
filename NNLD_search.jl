@@ -18,7 +18,7 @@ let
     C2 = zeros(Int64, m*m)
 
     bf = float(b)
-    c_z = 50
+    c_z = 60
     pts = zeros(s, N)
     badic = collect.(Iterators.product(fill(0:b-1, m)...))[:]
 
@@ -26,14 +26,18 @@ let
     df = DataFrame(i1 = Int64[], i2 = Int64[])
     CSV.write("output.csv", df)
     
-    matrix_range = 0:100 # 0:b^(m*m)-1
+    matrix_range = 0:1000 # 0:b^(m*m)-1
 
     @showprogress for i1 in matrix_range
-        for i2 in 0:i1
+        for i2 in 0:i1-1
             int_2_matrix!(C1, i1, b, m)
             int_2_matrix!(C2, i2, b, m)
 
             C = (reshape(C1, m, m), reshape(C2, m, m))
+            if det(C[1]) % b == 0 || det(C[2]) % b == 0
+                continue
+            end
+
 
             get_points!(pts, C, badic, m, b, bf)  
             
@@ -47,7 +51,7 @@ let
             # end 
 
             nnld = is_NNLD(c_z, s, pts)
-            if nnld
+            if nnld == true
                 push!(df, (i1, i2))
             end
         end
@@ -63,4 +67,4 @@ end
 
 # use this to get the corresponding matrices
 get_matrix(i, b, m) = reshape(int_2_matrix(i, b, m), m, m)
-
+get_matrices(i1,i2,b,m) = [ get_matrix(i1,b,m) get_matrix(i2,b,m) ]
