@@ -29,7 +29,7 @@ let
     matrix_range = 0:100 # 0:b^(m*m)-1
 
     @showprogress for i1 in matrix_range
-        for i2 in matrix_range
+        for i2 in 0:i1
             int_2_matrix!(C1, i1, b, m)
             int_2_matrix!(C2, i2, b, m)
 
@@ -62,5 +62,5 @@ end
 # df_result = CSV.read("output.csv", DataFrame)
 
 # use this to get the corresponding matrices
-get_matrix(i, b, m) = reshape(int_2_matrix(10, b, m), m, m)
+get_matrix(i, b, m) = reshape(int_2_matrix(i, b, m), m, m)
 
