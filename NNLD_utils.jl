@@ -1,8 +1,12 @@
 using Test
 
 vol(z) = prod(z)
-vol_h(z, pts) = count( all(p .< z) for p in pts ) / length(pts)
+vol_h(z, pts::Vector) = count( all(p .< z) for p in pts ) / length(pts)
+vol_h(z, pts::Matrix) = count( all(view(pts,:,i) .< z) for i in axes(pts,2) ) / size(pts,2)
 δ(z,pts) = vol_h(z, pts) - vol(z)
+
+@test vol_h( [0.5,0.5], [0.4 0.6; 0.4 0.4] ) == 0.5
+@test vol_h( [0.5,0.5], [[0.4,0.4],[0.6,0.4]] ) == 0.5
 
 function is_NNLD(c_z, s, pts)
     NNLD = true
