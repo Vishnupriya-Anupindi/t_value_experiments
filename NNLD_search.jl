@@ -52,6 +52,9 @@ let
                 continue
             end
 
+            if C[1][1,:] == C[2][1,:]
+                continue
+            end
 
             get_points!(pts, C, badic, m, b, bf)  
             
