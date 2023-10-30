@@ -27,7 +27,7 @@ let
     df = DataFrame(i1 = Int64[], i2 = Int64[])
     CSV.write("output.csv", df)
     
-    matrix_range = 0:10000 # 0:b^(m*m)-1
+    matrix_range = 0:1000 # 0:b^(m*m)-1
 
     @showprogress for i1 in matrix_range
 
@@ -84,5 +84,15 @@ get_matrix(i, b, m) = reshape(int_2_matrix(i, b, m), m, m)
 get_matrices(i1,i2,b,m) = [ get_matrix(i1,b,m) get_matrix(i2,b,m) ]
 
 
-#C1 = get_matrix(857, 3, 3)
-#C2 = get_matrix(855, 3, 3)
+C1 = get_matrix(828, 3, 3)
+C2 = get_matrix(820, 3, 3)
+
+pts = get_points((C1, C2), badic, m, b)
+
+is_NNLD_d(pts)
+
+
+
+include("NNLD_plots.jl")
+
+plot_points(pts)
