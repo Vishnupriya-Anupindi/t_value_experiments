@@ -6,7 +6,7 @@ include("NNLD_utils.jl")
 nnld_counter = 0
 
 #@profview let 
-let 
+begin 
     b = 3
     m = 3
     s = 2
@@ -86,8 +86,10 @@ get_matrices(i1,i2,b,m) = [ get_matrix(i1,b,m) get_matrix(i2,b,m) ]
 
 C1 = get_matrix(828, 3, 3)
 C2 = get_matrix(820, 3, 3)
-
-pts = get_points((C1, C2), badic, m, b)
+m=3
+b=3
+s=2
+pts = get_points((C1, C2), get_badic(b,m), 3, 3)
 
 is_NNLD_d(pts)
 
