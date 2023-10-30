@@ -19,7 +19,7 @@ begin
     C = (reshape(C1, m, m), reshape(C2, m, m))
 
     bf = float(b)
-    c_z = 60
+    c_z = 500
     pts = [zeros(s) for i in 1:N ]
     badic = get_badic(b,m)
 
@@ -27,7 +27,7 @@ begin
     df = DataFrame(i1 = Int64[], i2 = Int64[])
     CSV.write("output.csv", df)
     
-    matrix_range = 0:1000 # 0:b^(m*m)-1
+    matrix_range = 0:5000 # 0:b^(m*m)-1
 
     @showprogress for i1 in matrix_range
 
@@ -56,7 +56,7 @@ begin
                 continue
             end
 
-            get_points!(pts, C, badic, m, b, bf)  
+            get_points!(pts, C, badic, b, m, bf)  
             
             # L = 0 
             # for j in axes(pts, 2)
@@ -67,7 +67,7 @@ begin
             #     end 
             # end 
 
-            nnld = is_NNLD_d(pts)
+            nnld = is_NNLD(c_z,s,pts)
             if nnld == true
                 push!(df, (i1, i2))
             end
@@ -77,24 +77,29 @@ end
 
 
 
-# df_result = CSV.read("output.csv", DataFrame)
+df_result = CSV.read("output.csv", DataFrame)
 
-# use this to get the corresponding matrices
-get_matrix(i, b, m) = reshape(int_2_matrix(i, b, m), m, m)
-get_matrices(i1,i2,b,m) = [ get_matrix(i1,b,m) get_matrix(i2,b,m) ]
+filter!(row -> validate_NNLD(row.i1,row.i2,c_z,b,m,s), df_result)
+filter!(row -> validate_NNLD(row.i1,row.i2,c_z,b,m,s), df_result)
+CSV.write("filter.csv",df_result)
+
+begin
+    (i1, i2) = (3354, 3062)
+    C1 = get_matrix(i1, 3, 3)
+    C2 = get_matrix(i2, 3, 3)
+    C = [C1 C2]
+    display(C)
+    @show i1 i2
+    m=3
+    b=3
+    s=2
+    pts = get_points((C1, C2), get_badic(b,m), b, m)
+
+    @show is_NNLD(10000,2,pts)
 
 
-C1 = get_matrix(828, 3, 3)
-C2 = get_matrix(820, 3, 3)
-m=3
-b=3
-s=2
-pts = get_points((C1, C2), get_badic(b,m), 3, 3)
 
-is_NNLD_d(pts)
+    include("NNLD_plots.jl")
 
-
-
-include("NNLD_plots.jl")
-
-plot_points(pts)
+    plot_points(pts)
+end
