@@ -80,6 +80,20 @@ end
     #TODO add example with no NNLD
 end
 
+@testset begin "get points"
+    C = ( [2 1 1; 1 1 0; 1 0 0], [0 1 1; 1 1 0; 1 0 0] )
+    b = 3
+    m = 3
+    badic = collect.(Iterators.product(fill(0:b-1, m)...))[:]
+    bf = float(b)
+    pts = zeros(2, 27)
+    get_points!(pts, C, badic, m, b, bf)
+    #@test pts == [0 0.25 0.5 0.75; 0 0.5 0.25 0.75]
+
+    @test is_NNLD(50, 2, pts) == false
+    #TODO add example with no NNLD
+end
+
 
 # # t_value = 0 
 # # for t_test in 1:m
