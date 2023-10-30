@@ -88,10 +88,11 @@ function get_points(C, badic, m, b, bf = float(b))
     return pts
 end
 
+get_badic(b, m) = collect.(Iterators.product(fill(0:b-1, m)...))[:]
 
 @testset begin "get points"
     C = ( [1 0; 0 1], [0 1; 1 0] )
-    badic = [[0, 0], [0, 1], [1, 0], [1, 1]]
+    badic = get_badic(b,m)
     b = 2
     m = 2
     s = 2
@@ -110,7 +111,7 @@ end
     b = 3
     m = 3
     s = 2
-    badic = collect.(Iterators.product(fill(0:b-1, m)...))[:]
+    badic = get_badic(b,m)
     bf = float(b)
     pts = [zeros(s) for i in 1:length(badic)]
     get_points!(pts, C, badic, m, b, bf)
