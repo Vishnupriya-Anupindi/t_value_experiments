@@ -82,13 +82,21 @@ function get_points!(pts, C, badic, m, b, bf = float(b))
     end
 end
 
+function get_points(C, badic, m, b, bf = float(b))  
+    pts = [zeros(s) for i in 1:length(badic)]
+    get_points!(pts, C, badic, m, b, bf)
+    return pts
+end
+
+
 @testset begin "get points"
     C = ( [1 0; 0 1], [0 1; 1 0] )
     badic = [[0, 0], [0, 1], [1, 0], [1, 1]]
     b = 2
     m = 2
+    s = 2
     bf = float(b)
-    pts = [ zeros(m) for i in 1:length(badic)]
+    pts = [zeros(s) for i in 1:length(badic)]
     get_points!(pts, C, badic, m, b, bf)
     @test pts == [[0., 0.0], [0.25; 0.5], [0.5, 0.25], [0.75, 0.75]]
 
@@ -101,13 +109,15 @@ end
     C = ( [2 1 1; 1 1 0; 1 0 0], [0 1 1; 1 1 0; 1 0 0] )
     b = 3
     m = 3
+    s = 2
     badic = collect.(Iterators.product(fill(0:b-1, m)...))[:]
     bf = float(b)
-    pts = zeros(2, 27)
+    pts = [zeros(s) for i in 1:length(badic)]
     get_points!(pts, C, badic, m, b, bf)
     #@test pts == [0 0.25 0.5 0.75; 0 0.5 0.25 0.75]
 
     @test is_NNLD(50, 2, pts) == false
+    @test is_NNLD(pts) == false
     #TODO add example with no NNLD
 end
 

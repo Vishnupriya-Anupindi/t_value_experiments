@@ -20,7 +20,7 @@ let
 
     bf = float(b)
     c_z = 60
-    pts = [ zeros(s) for i in 1:N ]
+    pts = [zeros(s) for i in 1:N ]
     badic = collect.(Iterators.product(fill(0:b-1, m)...))[:]
 
 
@@ -82,3 +82,7 @@ end
 # use this to get the corresponding matrices
 get_matrix(i, b, m) = reshape(int_2_matrix(i, b, m), m, m)
 get_matrices(i1,i2,b,m) = [ get_matrix(i1,b,m) get_matrix(i2,b,m) ]
+
+
+C1 = get_matrix(857, 3, 3)
+C2 = get_matrix(855, 3, 3)
