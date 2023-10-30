@@ -20,7 +20,7 @@ let
 
     bf = float(b)
     c_z = 60
-    pts = zeros(s, N)
+    pts = [ zeros(s) for i in 1:N ]
     badic = collect.(Iterators.product(fill(0:b-1, m)...))[:]
 
 

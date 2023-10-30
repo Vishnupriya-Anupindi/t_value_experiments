@@ -21,6 +21,21 @@ function is_NNLD(c_z, s, pts)
     return NNLD
 end
 
+function is_NNLD(pts::Vector, tol = eps(1.0))
+    NNLD = true
+    z = similar(pts[1])
+    for i in eachindex(pts)
+        @. z = pts[i] - tol 
+        @. z = max(z, 0.0)
+
+        if δ(z,pts) < 0
+            NNLD = false
+            break
+        end
+    end
+    return NNLD
+end
+
 @inline function norm_coord(v, b, bf = float(b))
     v_1 = 0.0
     for i in eachindex(v)
@@ -54,14 +69,15 @@ end
 # pts needs to be of size (s, N) where N is length(badic) = b^m
 function get_points!(pts, C, badic, m, b, bf = float(b))  
     Cn = zeros(Int64, m) 
-    @inbounds for j in axes(pts, 2)  # 1:N
+    @inbounds for j in eachindex(pts)  # 1:N
         n = badic[j]
-        for i in axes(pts,1)  # 1:s
+
+        for i in eachindex(C)
             mul!(Cn, C[i], n)
             for k in eachindex(Cn)
                 Cn[k] = Cn[k] % b
             end 
-            pts[i, j] = norm_coord(Cn, b, bf)
+            pts[j][i] = norm_coord(Cn, b, bf)
         end
     end
 end
@@ -72,11 +88,12 @@ end
     b = 2
     m = 2
     bf = float(b)
-    pts = zeros(2, 4)
+    pts = [ zeros(m) for i in 1:length(badic)]
     get_points!(pts, C, badic, m, b, bf)
-    @test pts == [0 0.25 0.5 0.75; 0 0.5 0.25 0.75]
+    @test pts == [[0., 0.0], [0.25; 0.5], [0.5, 0.25], [0.75, 0.75]]
 
     @test is_NNLD(100, 2, pts) == true
+    @test is_NNLD(pts) == true
     #TODO add example with no NNLD
 end
 
