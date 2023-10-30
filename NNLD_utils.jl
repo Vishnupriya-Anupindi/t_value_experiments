@@ -22,18 +22,24 @@ function is_NNLD(c_z, s, pts)
 end
 
 function is_NNLD_d(pts::Vector, tol = eps(1.0))
-    NNLD = true
     z = similar(pts[1])
     for i in eachindex(pts)
         @. z = pts[i] - tol 
         @. z = max(z, 0.0)
 
         if δ(z,pts) < 0
-            NNLD = false
-            break
+            return false
         end
     end
-    return NNLD
+    for i in eachindex(pts)
+        @. z = pts[i]
+        @. z = max(z, 0.0)
+
+        if δ(z,pts) < 0
+            return false
+        end
+    end
+    return true
 end
 
 @inline function norm_coord(v, b, bf = float(b))
