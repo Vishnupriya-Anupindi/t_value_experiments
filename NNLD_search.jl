@@ -67,7 +67,7 @@ let
             #     end 
             # end 
 
-            nnld = is_NNLD(c_z, s, pts)
+            nnld = is_NNLD_d(pts)
             if nnld == true
                 push!(df, (i1, i2))
             end
@@ -84,5 +84,5 @@ get_matrix(i, b, m) = reshape(int_2_matrix(i, b, m), m, m)
 get_matrices(i1,i2,b,m) = [ get_matrix(i1,b,m) get_matrix(i2,b,m) ]
 
 
-C1 = get_matrix(857, 3, 3)
-C2 = get_matrix(855, 3, 3)
+#C1 = get_matrix(857, 3, 3)
+#C2 = get_matrix(855, 3, 3)

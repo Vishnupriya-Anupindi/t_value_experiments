@@ -21,7 +21,7 @@ function is_NNLD(c_z, s, pts)
     return NNLD
 end
 
-function is_NNLD(pts::Vector, tol = eps(1.0))
+function is_NNLD_d(pts::Vector, tol = eps(1.0))
     NNLD = true
     z = similar(pts[1])
     for i in eachindex(pts)
@@ -92,17 +92,17 @@ get_badic(b, m) = collect.(Iterators.product(fill(0:b-1, m)...))[:]
 
 @testset begin "get points"
     C = ( [1 0; 0 1], [0 1; 1 0] )
-    badic = get_badic(b,m)
     b = 2
     m = 2
     s = 2
+    badic = get_badic(b,m)
     bf = float(b)
     pts = [zeros(s) for i in 1:length(badic)]
     get_points!(pts, C, badic, m, b, bf)
-    @test pts == [[0., 0.0], [0.25; 0.5], [0.5, 0.25], [0.75, 0.75]]
+    @test pts == [[0.0, 0.0], [0.5, 0.25],[0.25; 0.5], [0.75, 0.75]]
 
     @test is_NNLD(100, 2, pts) == true
-    @test is_NNLD(pts) == true
+    @test is_NNLD_d(pts) == true
     #TODO add example with no NNLD
 end
 
@@ -118,7 +118,7 @@ end
     #@test pts == [0 0.25 0.5 0.75; 0 0.5 0.25 0.75]
 
     @test is_NNLD(50, 2, pts) == false
-    @test is_NNLD(pts) == false
+    @test is_NNLD_d(pts) == false
     #TODO add example with no NNLD
 end
 
