@@ -27,12 +27,14 @@ begin
     df = DataFrame(i1 = Int64[], i2 = Int64[])
     CSV.write("output.csv", df)
     
-    matrix_range = 0:5000 # 0:b^(m*m)-1
+    matrix_range = 0:4000 #0:b^(m*m)-1
 
-    @showprogress for i1 in matrix_range
+    prog = Progress(Int(length(matrix_range)*(length(matrix_range)-1)/2))
 
-        # write in the beginning, to ensure that we don't accidently shit the writing part
-        if i1 % 10 == 0 
+    for i1 in matrix_range
+
+        # write in the beginning, to ensure that we don't accidently shift the writing part
+        if i1 % 100 == 0 
             CSV.write("output.csv", df, append = true)
             empty!(df)
         end
@@ -41,10 +43,12 @@ begin
         C[1] .= reshape(C1, m, m)
 
         if det(C[1]) % b == 0
+            next!(prog,step=i1)
             continue
         end
 
         for i2 in 0:i1-1
+            next!(prog)
             int_2_matrix!(C2, i2, b, m)
             C[2] .= reshape(C2, m, m)
 
@@ -55,6 +59,18 @@ begin
             if C[1][1,:] == C[2][1,:]
                 continue
             end
+
+            if C[1][1,:] == C[2][2,:]
+                continue
+            end
+
+            if C[1][2,:] == C[2][1,:]
+                continue
+            end
+
+            #if C[1][2,:] == C[2][2,:]
+            #    continue
+            #end
 
             get_points!(pts, C, badic, b, m, bf)  
             
@@ -84,7 +100,7 @@ filter!(row -> validate_NNLD(row.i1,row.i2,c_z,b,m,s), df_result)
 CSV.write("filter.csv",df_result)
 
 begin
-    (i1, i2) = (3354, 3062)
+    (i1, i2) = (4414,2446)
     C1 = get_matrix(i1, 3, 3)
     C2 = get_matrix(i2, 3, 3)
     C = [C1 C2]
@@ -93,7 +109,7 @@ begin
     m=3
     b=3
     s=2
-    pts = get_points((C1, C2), get_badic(b,m), b, m)
+    pts = get_points((C1, C2), get_badic(b,m), b, m,s)
 
     @show is_NNLD(10000,2,pts)
 

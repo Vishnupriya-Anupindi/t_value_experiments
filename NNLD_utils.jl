@@ -73,7 +73,7 @@ end
 
 
 # pts needs to be of size (s, N) where N is length(badic) = b^m
-function get_points!(pts, C, badic, b, m, bf = float(b))  
+function get_points!(pts, C, badic, b, m,bf = float(b))  
     Cn = zeros(Int64, m) 
     @inbounds for j in eachindex(pts)  # 1:N
         n = badic[j]
@@ -88,7 +88,7 @@ function get_points!(pts, C, badic, b, m, bf = float(b))
     end
 end
 
-function get_points(C, badic, b, m, bf = float(b))  
+function get_points(C, badic, b, m, s, bf = float(b))  
     pts = [zeros(s) for i in 1:length(badic)]
     get_points!(pts, C, badic, b, m, bf)
     return pts
@@ -113,7 +113,7 @@ get_badic(b, m) = collect.(Iterators.product(fill(0:b-1, m)...))[:]
 end
 
 @testset "get points" begin
-    C = ( [2 1 1; 1 1 0; 1 0 0], [0 1 1; 1 1 0; 1 0 0] )
+    C = ([2 1 1; 1 1 0; 1 0 0], [0 1 1; 1 1 0; 1 0 0])
     b = 3
     m = 3
     s = 2
@@ -123,7 +123,7 @@ end
     get_points!(pts, C, badic, b, m, bf)
     #@test pts == [0 0.25 0.5 0.75; 0 0.5 0.25 0.75]
 
-    @test is_NNLD(50, 2, pts) == false
+    @test is_NNLD(100, 2, pts) == false
     @test is_NNLD_d(pts) == false
     #TODO add example with no NNLD
 end
@@ -134,7 +134,7 @@ get_matrices(i1,i2,b,m) = [ get_matrix(i1,b,m) get_matrix(i2,b,m) ]
 function validate_NNLD(i1,i2,c_z,b,m,s)
     C1 = get_matrix(i1, b, m)
     C2 = get_matrix(i2, b, m)
-    pts = get_points((C1, C2), get_badic(b,m), b, m)
+    pts = get_points((C1, C2), get_badic(b,m), b, m,s)
 
     return is_NNLD(c_z,s,pts)
 end
