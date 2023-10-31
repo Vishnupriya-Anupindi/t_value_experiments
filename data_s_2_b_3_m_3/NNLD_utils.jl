@@ -2,7 +2,7 @@ using Test
 
 vol(z) = prod(z)
 vol_h(z, pts::Vector) = count( all(p .< z) for p in pts ) / length(pts)
-#vol_h(z, pts::Matrix) = count( all(pts[j,i] < z[j] for j in axes(pts,1)) for i in axes(pts,2) ) / size(pts,2)
+vol_h(z, pts::Matrix) = count( all(pts[j,i] < z[j] for j in axes(pts,1)) for i in axes(pts,2) ) / size(pts,2)
 δ(z,pts) = vol_h(z, pts) - vol(z)
 
 @test vol_h( [0.5,0.5], [0.4 0.6; 0.4 0.4] ) == 0.5
@@ -21,6 +21,26 @@ function is_NNLD(c_z, s, pts)
     return NNLD
 end
 
+function is_NNLD_d(pts::Vector, tol = eps(1.0))
+    z = similar(pts[1])
+    for i in eachindex(pts)
+        @. z = pts[i] - tol 
+        @. z = max(z, 0.0)
+
+        if δ(z,pts) < 0
+            return false
+        end
+    end
+    for i in eachindex(pts)
+        @. z = pts[i]
+        @. z = max(z, 0.0)
+
+        if δ(z,pts) < 0
+            return false
+        end
+    end
+    return true
+end
 
 @inline function norm_coord(v, b, bf = float(b))
     v_1 = 0.0
@@ -34,7 +54,7 @@ end
 
 # generates the ith matrix (returned as a vector) 
 # in base b with m rows and m columns 
-function int_to_matrix!(C, i, b, m) 
+function int_2_matrix!(C, i, b, m) 
     C .= 0
     if i > 0
         digits!(C, i, base=b)
@@ -42,14 +62,14 @@ function int_to_matrix!(C, i, b, m)
     return C
 end 
 
-function int_to_matrix(i, b, m) 
+function int_2_matrix(i, b, m) 
     C = zeros(Int, m*m)
-    return int_to_matrix!(C, i, b, m)
+    return int_2_matrix!(C, i, b, m)
 end 
 
-@test int_to_matrix(0, 3, 2) == [0, 0, 0, 0]
-@test int_to_matrix(5, 3, 2) == [2, 1, 0, 0]
-@test int_to_matrix(3^(2*2)-1, 3, 2) == [2, 2, 2, 2]
+@test int_2_matrix(0, 3, 2) == [0, 0, 0, 0]
+@test int_2_matrix(5, 3, 2) == [2, 1, 0, 0]
+@test int_2_matrix(3^(2*2)-1, 3, 2) == [2, 2, 2, 2]
 
 
 # pts needs to be of size (s, N) where N is length(badic) = b^m
@@ -88,7 +108,7 @@ get_badic(b, m) = collect.(Iterators.product(fill(0:b-1, m)...))[:]
     @test pts == [[0.0, 0.0], [0.5, 0.25],[0.25; 0.5], [0.75, 0.75]]
 
     @test is_NNLD(100, 2, pts) == true
-    
+    @test is_NNLD_d(pts) == true
     #TODO add example with no NNLD
 end
 
@@ -104,22 +124,23 @@ end
     #@test pts == [0 0.25 0.5 0.75; 0 0.5 0.25 0.75]
 
     @test is_NNLD(100, 2, pts) == false
-    
+    @test is_NNLD_d(pts) == false
     #TODO add example with no NNLD
 end
 
-get_matrix(i, b, m) = reshape(int_to_matrix(i, b, m), m, m)
-#get_matrices(i1,i2,b,m) = [ get_matrix(i1,b,m) get_matrix(i2,b,m) ]
+get_matrix(i, b, m) = reshape(int_2_matrix(i, b, m), m, m)
+get_matrices(i1,i2,b,m) = [ get_matrix(i1,b,m) get_matrix(i2,b,m) ]
 
-function validate_NNLD(idxs,c_z,b,m,s)
-    C = [get_matrix(i,b,m) for i in idxs]
-    pts = get_points(C, get_badic(b,m), b, m,s)
+function validate_NNLD(i1,i2,c_z,b,m,s)
+    C1 = get_matrix(i1, b, m)
+    C2 = get_matrix(i2, b, m)
+    pts = get_points((C1, C2), get_badic(b,m), b, m,s)
 
     return is_NNLD(c_z,s,pts)
 end
 
 @testset "validate NNLD" begin
-    @test validate_NNLD((3354,3062),10000,3,3,2) == true
+    @test validate_NNLD(3354,3062,10000,3,3,2) == true
 end
 
 
