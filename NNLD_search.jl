@@ -2,6 +2,7 @@ using Random, DataFrames, CSV, LinearAlgebra, ProgressMeter
 include("NNLD_utils.jl")
 
 mkpath("data")
+fn_postfix = "_tmp"
 
 #@profview let 
 begin 
@@ -29,7 +30,7 @@ begin
         C = (zeros(Int,m,m),zeros(Int,m,m))
     
         df = DataFrame(i1 = Int64[], i2 = Int64[])
-        CSV.write("data/output_b$(b)_m$(m)_s$(s).csv", df)
+        CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df)
     
         prog = Progress(Int(length(matrix_range)*(length(matrix_range)-1)/2))
 
@@ -37,7 +38,7 @@ begin
 
             # write in the beginning, to ensure that we don't accidently shift the writing part
             if i1 % 100 == 0 
-                CSV.write("data/output_b$(b)_m$(m)_s$(s).csv", df, append = true)
+                CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
                 empty!(df)
             end
 
@@ -73,7 +74,7 @@ begin
         C = (zeros(Int,m,m),zeros(Int,m,m),zeros(Int,m,m))
     
         df = DataFrame(i1 = Int64[], i2 = Int64[], i3 = Int64[])
-        CSV.write("data/output_b$(b)_m$(m)_s$(s).csv", df)
+        CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df)
         
         
 
@@ -83,7 +84,7 @@ begin
 
             # write in the beginning, to ensure that we don't accidently shift the writing part
             if i1 % 100 == 0 
-                CSV.write("data/output_b$(b)_m$(m)_s$(s).csv", df, append = true)
+                CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
                 empty!(df)
             end
 
@@ -134,7 +135,7 @@ begin
 end
 
 
-df_result = CSV.read("data/output_b$(b)_m$(m)_s$(s).csv", DataFrame)
+df_result = CSV.read("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", DataFrame)
 
 filter!(row -> validate_NNLD(row,c_z,b,m,s), df_result)
 filter!(row -> validate_NNLD(row,c_z,b,m,s), df_result)
@@ -142,7 +143,7 @@ filter!(row -> validate_NNLD(row,c_z,b,m,s), df_result)
 #CSV.write("filter.csv",df_result)
 
 
-CSV.write("data/filter_b$(b)_m$(m)_s$(s).csv",df_result)
+CSV.write("data/filter_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result)
 
 begin
     idxs = values(df_result[28,:]) # Use Vector() if number of row entries are large
