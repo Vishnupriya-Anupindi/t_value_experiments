@@ -5,7 +5,7 @@ vol_h(z, pts::Vector) = count( all(p .< z) for p in pts ) / length(pts)
 #vol_h(z, pts::Matrix) = count( all(pts[j,i] < z[j] for j in axes(pts,1)) for i in axes(pts,2) ) / size(pts,2)
 δ(z,pts) = vol_h(z, pts) - vol(z)
 
-@test vol_h( [0.5,0.5], [0.4 0.6; 0.4 0.4] ) == 0.5
+#@test vol_h( [0.5,0.5], [0.4 0.6; 0.4 0.4] ) == 0.5
 @test vol_h( [0.5,0.5], [[0.4,0.4],[0.6,0.4]] ) == 0.5
 
 function is_NNLD(c_z, s, pts)
@@ -122,6 +122,38 @@ end
     @test validate_NNLD((3354,3062),10000,3,3,2) == true
 end
 
+
+function compare_rows_matrix(C1,C2)
+    C = (C1,C2)
+    if C[1][1,:] == C[2][1,:]
+        return true
+    end
+
+    if C[1][1,:] == C[2][2,:]
+        return true
+    end
+
+    if C[1][2,:] == C[2][1,:]
+        return true
+    end
+    return false
+end
+
+function compare_rows_matrix(C1,C2,C3)
+    C = (C1,C2,C3)
+    for d1 in 1:3
+        for d2 in 1:3
+            if d1<d2 && C[d1][1,:] == C[d2][1,:]
+                return true
+            end
+
+            if d1!=d2 && C[d1][1,:] == C[d2][2,:]
+                return true
+            end
+        end
+    end
+    return false
+end
 
 
 # # t_value = 0 
