@@ -2,7 +2,7 @@ using Random, DataFrames, CSV, LinearAlgebra, ProgressMeter
 include("NNLD_utils.jl")
 
 mkpath("data")
-fn_postfix = "less_check"
+fn_postfix = "i1_4663_less_check"
 
 #@profview let 
 begin 
@@ -69,6 +69,8 @@ begin
                 end
             end
         end
+        CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
+
 
     elseif s==3
         C = (zeros(Int,m,m),zeros(Int,m,m),zeros(Int,m,m))
@@ -78,16 +80,17 @@ begin
         
         
 
-        prog = Progress(binomial(length(matrix_range),3))
+        prog = Progress(binomial(length(matrix_range),2)) #Change this to 3 later.
 
-        for i1 in matrix_range
+        for i1 in [4663] #matrix_range
 
             # write in the beginning, to ensure that we don't accidently shift the writing part
-            if i1 % 100 == 0 
-                CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
-                println("write dataframe with i1 = $i1")
-                empty!(df)
-            end
+            #Shifting to i2 since we are keeping i1 fixed.
+            #if i1 % 100 == 0 
+            #    CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
+            #    println("write dataframe with i1 = $i1")
+            #    empty!(df)
+            #end
 
             C[1] .= reshape(int_to_matrix(i1, b, m), m, m)
 
@@ -96,7 +99,15 @@ begin
                 continue
             end
 
-            for i2 in 0:i1-1
+            for i2 in matrix_range
+
+                #Comment this out when computing for all i1.
+                if i2 % 100 == 0 
+                    CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
+                    println("write dataframe with i2 = $i2")
+                    empty!(df)
+                end
+                #End of commenting out
                 
                 C[2] .= reshape(int_to_matrix(i2, b, m), m, m)
 
@@ -127,7 +138,7 @@ begin
                 end
             end
         end
-    
+        CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
 
     else 
         @warn "not implemented"
@@ -138,23 +149,25 @@ end
 
 df_result = CSV.read("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", DataFrame)
 
-filter!(row -> validate_NNLD(row,c_z,b,m,s), df_result)
-filter!(row -> validate_NNLD(row,c_z,b,m,s), df_result)
-
+filter!(row -> validate_NNLD(row,c_z*5,b,m,s), df_result)
+filter!(row -> validate_NNLD(row,c_z*7,b,m,s), df_result)
+filter!(row -> validate_NNLD(row,c_z*9,b,m,s), df_result)
 #CSV.write("filter.csv",df_result)
 
 
 CSV.write("data/filter_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result)
 
 begin
-    idxs = values(df_result[28,:]) # Use Vector() if number of row entries are large
+    idxs = values(df_result[4,:]) # Use Vector() if number of row entries are large
     C = [get_matrix(i,b,m) for i in idxs]
-    display(C)
+    J = hcat(C...)
+    display(J)
     @show idxs
     
     pts = get_points(C, get_badic(b,m), b, m,s)
 
     @show is_NNLD(10000,s,pts)
+
 
 
     if s == 2
@@ -163,3 +176,11 @@ begin
         plot_points(pts)
     end
 end
+
+#idxs = values(df_result[1762,:]) 
+#C = [get_matrix(i,b,m) for i in idxs]
+#K = hcat(C[1])
+#for i in 2:s
+#    K = hcat(K,C[i])
+#end
+    
