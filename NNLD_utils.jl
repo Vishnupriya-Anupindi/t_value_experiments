@@ -147,9 +147,9 @@ function compare_rows_matrix(C1,C2,C3)
                 return true
             end
 
-            if d1!=d2 && C[d1][1,:] == C[d2][2,:]
-                return true
-            end
+            #if d1!=d2 && C[d1][1,:] == C[d2][2,:]
+            #    return true
+            #end
         end
     end
     return false

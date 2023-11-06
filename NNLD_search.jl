@@ -2,7 +2,7 @@ using Random, DataFrames, CSV, LinearAlgebra, ProgressMeter
 include("NNLD_utils.jl")
 
 mkpath("data")
-fn_postfix = "_tmp"
+fn_postfix = "less_check"
 
 #@profview let 
 begin 
@@ -85,6 +85,7 @@ begin
             # write in the beginning, to ensure that we don't accidently shift the writing part
             if i1 % 100 == 0 
                 CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
+                println("write dataframe with i1 = $i1")
                 empty!(df)
             end
 
