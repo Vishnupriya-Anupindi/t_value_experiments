@@ -2,19 +2,19 @@ using Random, DataFrames, CSV, LinearAlgebra, ProgressMeter
 include("NNLD_utils.jl")
 
 mkpath("data")
-fn_postfix = "less_check"
+fn_postfix = "i1_6802_less_check"
 
 #@profview let 
 begin 
     b = 3
-    m = 4
+    m = 3
     s = 3
     ρ = m 
     t = m - ρ 
     N = b^m
 
     bf = float(b)
-    c_z = 700
+    c_z = 500
     pts = [zeros(s) for i in 1:N ]
     badic = get_badic(b,m)
 
@@ -80,17 +80,17 @@ begin
         
         
 
-        prog = Progress(binomial(length(matrix_range),3)) #Change this to 3 later.
+        prog = Progress(binomial(length(matrix_range),2)) #Change this to 3 later.
 
-        for i1 in matrix_range
+        for i1 in [6802] #matrix_range
 
             # write in the beginning, to ensure that we don't accidently shift the writing part
-            
-            if i1 % 100 == 0 
-                CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
-                println("write dataframe with i1 = $i1")
-                empty!(df)
-            end
+            #Shifting to i2 since we are keeping i1 fixed.
+            #if i1 % 100 == 0 
+            #    CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
+            #    println("write dataframe with i1 = $i1")
+            #    empty!(df)
+            #end
 
             C[1] .= reshape(int_to_matrix(i1, b, m), m, m)
 
@@ -99,14 +99,14 @@ begin
                 continue
             end
 
-            for i2 in 0:i1-1
+            for i2 in matrix_range
 
                 #Comment this out when computing for all i1.
-                #if i2 % 100 == 0 
-                #    CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
-                #    println("write dataframe with i2 = $i2")
-                #    empty!(df)
-                #end
+                if i2 % 100 == 0 
+                    CSV.write("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df, append = true)
+                    println("write dataframe with i2 = $i2")
+                    empty!(df)
+                end
                 #End of commenting out
                 
                 C[2] .= reshape(int_to_matrix(i2, b, m), m, m)
