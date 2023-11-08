@@ -2,12 +2,12 @@ using Random, DataFrames, CSV, LinearAlgebra, ProgressMeter
 include("NNLD_utils.jl")
 
 mkpath("data")
-fn_postfix = "i1_6802_less_check"
+fn_postfix = "i1_33825_less_check"
 
 #@profview let 
 begin 
-    b = 3
-    m = 3
+    b = 2
+    m = 4
     s = 3
     ρ = m 
     t = m - ρ 
@@ -82,7 +82,7 @@ begin
 
         prog = Progress(binomial(length(matrix_range),2)) #Change this to 3 later.
 
-        for i1 in [6802] #matrix_range
+        for i1 in [33825] #matrix_range
 
             # write in the beginning, to ensure that we don't accidently shift the writing part
             #Shifting to i2 since we are keeping i1 fixed.
@@ -149,16 +149,16 @@ end
 
 df_result = CSV.read("data/output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", DataFrame)
 
-filter!(row -> validate_NNLD(row,c_z*5,b,m,s), df_result)
-filter!(row -> validate_NNLD(row,c_z*7,b,m,s), df_result)
-filter!(row -> validate_NNLD(row,c_z*9,b,m,s), df_result)
+filter!(row -> validate_NNLD(row,c_z*100,b,m,s), df_result)
+filter!(row -> validate_NNLD(row,c_z*70,b,m,s), df_result)
+filter!(row -> validate_NNLD(row,c_z*50,b,m,s), df_result)
 #CSV.write("filter.csv",df_result)
 
 
 CSV.write("data/filter_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result)
 
 begin
-    idxs = values(df_result[3,:]) # Use Vector() if number of row entries are large
+    idxs = values(df_result[280,:]) # Use Vector() if number of row entries are large
     C = [get_matrix(i,b,m) for i in idxs]
     J = hcat(C...)
     display(J)

@@ -7,7 +7,7 @@ fn_postfix = "less_check"
 #@profview let 
 begin 
     b = 3
-    m = 4
+    m = 3
     s = 3
     ρ = m 
     t = m - ρ 
@@ -80,7 +80,7 @@ begin
         
         
 
-        prog = Progress(binomial(length(matrix_range),3)) #Change this to 3 later.
+        prog = Progress(binomial(length(matrix_range),2)) #Change this to 3 later.
 
         for i1 in matrix_range
 
