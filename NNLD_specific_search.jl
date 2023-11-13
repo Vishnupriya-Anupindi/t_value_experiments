@@ -2,11 +2,11 @@ using Random, DataFrames, CSV, LinearAlgebra, ProgressMeter
 include("NNLD_utils.jl")
 
 mkpath("data")
-fn_postfix = "i1_33825_less_check"
+fn_postfix = "i1_14408200_less_check"
 
 #@profview let 
 begin 
-    b = 2
+    b = 3
     m = 4
     s = 3
     ρ = m 
@@ -82,7 +82,7 @@ begin
 
         prog = Progress(binomial(length(matrix_range),2)) #Change this to 3 later.
 
-        for i1 in [33825] #matrix_range
+        for i1 in [14408200] #matrix_range
 
             # write in the beginning, to ensure that we don't accidently shift the writing part
             #Shifting to i2 since we are keeping i1 fixed.
@@ -156,9 +156,10 @@ filter!(row -> validate_NNLD(row,c_z*50,b,m,s), df_result)
 
 
 CSV.write("data/filter_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result)
+df_result = CSV.read("data/filter_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", DataFrame)
 
 begin
-    idxs = values(df_result[280,:]) # Use Vector() if number of row entries are large
+    idxs = values(df_result[279,:]) # Use Vector() if number of row entries are large
     C = [get_matrix(i,b,m) for i in idxs]
     J = hcat(C...)
     display(J)
