@@ -21,56 +21,6 @@ function is_NNLD(c_z, s, pts)
     return NNLD
 end
 
-
-function is_d_NNLD(pts::Vector,s)
-    N = length(pts) #sort.by=()
-    pts = sort(pts;by=x->x[1]) #sort!(pts)
-    for i in eachindex(pts)
-        sort_pts = sort(pts[1:i];by=x->x[2])
-        for j in 1:i
-            if s==2
-                #@show (j-1) i*sort_pts[j][2] 
-                if (j-1) < i*sort_pts[j][2]  # prod(sort_pts[j][k] for k in 2:s)
-                    return false
-                end
-
-            elseif s==3
-                for k in 1:j
-                    #@show (k-1) i*prod(sort_pts[k][d] for d in 2:s)
-                    #there are bugs
-                    sort_pts_2 = sort(sort_pts[1:j];by=x->x[3])
-                    if (k-1) < i*prod(sort_pts_2[k][d] for d in 2:s)
-                        @show (k-1) i*prod(sort_pts_2[k][d] for d in 2:s)
-                        return false
-                    end 
-                end
-                
-            else 
-                @error "not implemented"
-            end
-        end
-    end 
-    return true
-
-end
-
-#@testset "det_NNLD" 
-begin
-    (b,m,s) = (2,3,2)
-    idxs = (273,140)
-    C = [get_matrix(i,b,m) for i in idxs]
-    pts = get_points(C, get_badic(b,m), b, m,s)
-    is_d_NNLD(pts,s),is_NNLD(10000,s,pts)
-end
-
-begin
-    (b,m,s) = (2,3,3)
-    idxs = (273,106,84)
-    C = [get_matrix(i,b,m) for i in idxs]
-    pts = get_points(C, get_badic(b,m), b, m,s)
-    is_d_NNLD(pts,s),is_NNLD(10000,s,pts)
-end
-
 @inline function norm_coord(v, b, bf = float(b))
     v_1 = 0.0
     for i in eachindex(v)
@@ -223,3 +173,52 @@ end
 # #     end
 # #     t_value += 1
 # # end
+
+function is_d_NNLD(pts::Vector,s)
+    N = length(pts) #sort.by=()
+    pts = sort(pts;by=x->x[1]) #sort!(pts)
+    for i in eachindex(pts)
+        sort_pts = sort(pts[1:i];by=x->x[2])
+        for j in 1:i
+            if s==2
+                #@show (j-1) i*sort_pts[j][2] 
+                if (j-1) < i*sort_pts[j][2]  # prod(sort_pts[j][k] for k in 2:s)
+                    return false
+                end
+
+            elseif s==3
+                for k in 1:j
+                    #@show (k-1) i*prod(sort_pts[k][d] for d in 2:s)
+                    #there are bugs
+                    sort_pts_2 = sort(sort_pts[1:j];by=x->x[3])
+                    if (k-1) < i*prod(sort_pts_2[k][d] for d in 2:s)
+                        @show (k-1) i*prod(sort_pts_2[k][d] for d in 2:s)
+                        return false
+                    end 
+                end
+                
+            else 
+                @error "not implemented"
+            end
+        end
+    end 
+    return true
+
+end
+
+#@testset "det_NNLD" 
+begin
+    (b,m,s) = (2,3,2)
+    idxs = (273,140)
+    C = [get_matrix(i,b,m) for i in idxs]
+    pts = get_points(C, get_badic(b,m), b, m,s)
+    is_d_NNLD(pts,s),is_NNLD(10000,s,pts)
+end
+
+begin
+    (b,m,s) = (2,3,3)
+    idxs = (273,106,84)
+    C = [get_matrix(i,b,m) for i in idxs]
+    pts = get_points(C, get_badic(b,m), b, m,s)
+    is_d_NNLD(pts,s),is_NNLD(10000,s,pts)
+end

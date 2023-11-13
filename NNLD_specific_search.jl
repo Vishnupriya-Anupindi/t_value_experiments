@@ -2,11 +2,11 @@ using Random, DataFrames, CSV, LinearAlgebra, ProgressMeter
 include("NNLD_utils.jl")
 
 mkpath("data")
-fn_postfix = "i1_14408200_less_check"
+fn_postfix = "i1_33825_less_check"
 
 #@profview let 
 begin 
-    b = 3
+    b = 2
     m = 4
     s = 3
     ρ = m 
@@ -159,7 +159,7 @@ CSV.write("data/filter_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result)
 df_result = CSV.read("data/filter_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", DataFrame)
 
 begin
-    idxs = values(df_result[279,:]) # Use Vector() if number of row entries are large
+    idxs = values(df_result[270,:]) # Use Vector() if number of row entries are large
     C = [get_matrix(i,b,m) for i in idxs]
     J = hcat(C...)
     display(J)
