@@ -5,7 +5,7 @@ using ReducedDigitalNets, LinearAlgebra, CairoMakie
 
 b = 2
 s = 2
-m = 8
+m = 4
 
 #Identity matrix
 C_1 = diagm(0 => fill(1,m))
