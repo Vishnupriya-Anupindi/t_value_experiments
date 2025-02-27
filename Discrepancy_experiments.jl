@@ -1,11 +1,22 @@
 import Pkg
 #Pkg.add(url="https://github.com/Vishnupriya-Anupindi/ReducedDigitalNets.jl")
-using ReducedDigitalNets, LinearAlgebra, CairoMakie
+using ReducedDigitalNets, LinearAlgebra, CairoMakie, DataFrames, CSV
 
+# Helper function for loading Sobol matrices
+function row_to_mat(row,b,m)
+    return stack(first(digits(x, base = b, pad = m),m) for x in first(row,m))
+end
+
+function load_seq_mat(filename,b,m,s)
+    df = CSV.read(filename, DataFrame, header = false, delim = ' ')
+    K = Matrix(df[1:s,1:m])
+    C = [row_to_mat(K[i,:],b,m) for i in 1:s]
+    return C
+end
 
 b = 2
 s = 2
-m = 4
+m = 5
 
 #Identity matrix
 C_1 = diagm(0 => fill(1,m))
@@ -45,6 +56,9 @@ C_1a = C_1[:, end:-1:1]
 
 #pts == pts_a
 
+C_sob = load_seq_mat("sobol_Cs.txt",b, m, s)
+
+C_sob[2]
 
 # Pascal matrix
 C_3 = zeros(Int64,m,m)
@@ -71,7 +85,7 @@ return M
 C_1a*C_3
 
 ################################# Pascal net ##################################
-CP = [C_1, C_3]
+CP = [C_1a, C_3]
 P_pa = DigitalNetGenerator(b,m,s,CP) 
 pts_pa = sort(genpoints(P_pa))
 
@@ -82,7 +96,7 @@ for j in 1:m-w[2]
     C3_red[:,j] = C_3[:,j]
 end
 C3_red
-CP_red = [C_1,C3_red]
+CP_red = [C_1a,C3_red]
 P_pa_red = DigitalNetGenerator(b,m,s,CP_red)
 pts_pa_red = sort(genpoints(P_pa_red))
 
