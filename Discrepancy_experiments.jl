@@ -4,7 +4,7 @@ using ReducedDigitalNets, LinearAlgebra, CairoMakie, DataFrames, CSV
 
 b = 2
 s = 2
-m = 2
+m = 3
 
 vol(z) = prod(z)
 vol_h(z, pts::Vector) = count( all(p .< z) for p in pts ) / length(pts)
