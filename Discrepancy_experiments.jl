@@ -19,8 +19,10 @@ function discr(pts::Vector)
     for i in eachindex(pts)
         sort_pts = sort(pts[1:i];by=x->x[2])
         for j in 1:i
-            z = (i/N,sort_pts[j][2])
+            z = ((i-1)/N,sort_pts[j][2])
             push!(disc, abs(δ(z,pts)), abs(δ_cl(z,pts)))
+            z_1 = ((i-1)/N, 1)
+            push!(disc, abs(δ(z_1,pts)), abs(δ_cl(z_1,pts)))
         end
     end
     return disc
@@ -56,6 +58,13 @@ C = [C_1,C_2]
 P = DigitalNetGenerator(b,m,s,C) 
 pts = genpoints(P)
 
+#Test
+# pts = sort(pts;by=x->x[1])
+# N = length(pts)
+# i = 4
+# j = 4
+# sort_pts = sort(pts[1:i];by=x->x[2])
+# z = ((i-1)/N,sort_pts[j][2])
 
 #Hammersley
 H = [C_1,C_1a]
@@ -70,8 +79,8 @@ d_h = discr(pts_h)
 maximum(d_h)
 
 begin
-    x = LinRange(0,1,100)
-    y = LinRange(0,1,100)
+    x = LinRange(0,1,1000)
+    y = LinRange(0,1,1000)
     fig = Figure(resolution = (1200, 800))
 
     ax = Axis(fig[1,1], title = "volume_interval")

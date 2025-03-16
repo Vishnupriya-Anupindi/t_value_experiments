@@ -1,9 +1,12 @@
 import Pkg
 #Pkg.add(url="https://github.com/Vishnupriya-Anupindi/ReducedDigitalNets.jl")
 using ReducedDigitalNets, LinearAlgebra, CairoMakie, DataFrames, CSV, ProgressMeter
+include("Discrepancy_utils.jl")
+using Combinatorics
 
 mkpath("data")
-fn_postfix = "id"
+fn_postfix = "grid"
+
 
 begin
     b = 2
@@ -16,61 +19,6 @@ begin
     badic = get_badic(b,m)
 
     println("b = $b, m = $m, s = $s, # matrices = $(b^(m*m)), # zero row matrices = $(b^(m*(m-1)))" )
-end
-
-
-vol(z) = prod(z)
-vol_h(z, pts::Vector) = count( all(p .< z) for p in pts ) / length(pts)
-vol_h_cl(z, pts::Vector) = count( all(p .<= z) for p in pts ) / length(pts)
-δ(z,pts) = vol_h(z, pts) - vol(z)
-δ_cl(z,pts) = vol_h_cl(z, pts) - vol(z)
-
-function discr(pts::Vector)
-    N = length(pts) #sort.by=()
-    disc = Vector{Float64}()
-    pts = sort(pts;by=x->x[1]) #sort!(pts)
-    for i in eachindex(pts)
-        sort_pts = sort(pts[1:i];by=x->x[2])
-        for j in 1:i
-            z = (i/N,sort_pts[j][2])
-            push!(disc, abs(δ(z,pts)), abs(δ_cl(z,pts)))
-        end
-    end
-    return maximum(disc)
-end
-
-# generates the ith matrix (returned as a vector) 
-# in base b with m rows and m columns 
-function int_to_matrix!(C, i, b, m) 
-    C .= 0
-    if i > 0
-        digits!(C, i, base=b)
-    end
-    return C
-end 
-
-function int_to_matrix(i, b, m) 
-    C = zeros(Int, m*m)
-    return int_to_matrix!(C, i, b, m)
-end 
-
-get_badic(b, m) = collect.(Iterators.product(fill(0:b-1, m)...))[:]
-get_matrix(i, b, m) = reshape(int_to_matrix(i, b, m), m, m)
-
-function compare_rows_matrix(C1,C2)
-    C = (C1,C2)
-    if C[1][1,:] == C[2][1,:]
-        return true
-    end
-
-    if C[1][1,:] == C[2][2,:]
-        return true
-    end
-
-    if C[1][2,:] == C[2][1,:]
-        return true
-    end
-    return false
 end
 
 begin
@@ -106,6 +54,10 @@ begin
                 if compare_rows_matrix(C...)
                     continue
                 end
+
+                if compare_rows_lin_ind(C...)
+                    continue
+                end
                     
                 P = DigitalNetGenerator(b,m,s,C) 
                 pts = genpoints(P) 
@@ -129,7 +81,7 @@ filter!(row -> row.d_s == mi, df_result)
 CSV.write("data/disc_filter_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result)
 
 begin
-    idxs = values(df_result[8,:])[1] # Use Vector() if number of row entries are large
+    idxs = values(df_result[16,:])[1] # Use Vector() if number of row entries are large
     C_2 = [get_matrix(i,b,m) for i in idxs]
     J = hcat(C_2...)
     display(J)
@@ -146,10 +98,40 @@ begin
 
 end
 
-idxs = values(df_result[13,:])[1] # Use Vector() if number of row entries are large
+
+
+df_result_2 = CSV.read("data/disc_output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", DataFrame)
+
+lp_disc = 0.25
+
+filter!(row -> row.d_s == lp_disc, df_result_2)
+
+CSV.write("data/disc_filter_lp_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result_2)
+
+begin
+    idxs = values(df_result_2[13,:])[1] # Use Vector() if number of row entries are large
+    C_2 = [get_matrix(i,b,m) for i in idxs]
+    J = hcat(C_2...)
+    display(J)
+    @show idxs
+
+    C = [diagm(0 => fill(1,m)),zeros(Int,m,m)]
+    C[2] .= reshape(int_to_matrix(idxs, b, m), m, m)
+    P = DigitalNetGenerator(b,m,s,C) 
+    pts = genpoints(P)
+    display(pts)
+
+    include("NNLD_plots.jl")
+    plot_points(pts)
+
+end
+
+
+
+idxs = values(df_result[1,:])[1] # Use Vector() if number of row entries are large
 C_2 = get_matrix(idxs,b,m)
 C_2 != [0 1 1; 1 1 1; 0 1 0]
-i_fil = df_result[!,1]
+i_fil = df[!,1]
 i_fil[1]
 
 
