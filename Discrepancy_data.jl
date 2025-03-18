@@ -5,13 +5,13 @@ include("Discrepancy_utils.jl")
 using Combinatorics
 
 mkpath("data")
-fn_postfix = "grid"
+fn_postfix = "id"
 
 
 begin
     b = 2
     s = 2
-    m = 3
+    m = 4
     N = b^m
 
     bf = float(b)
@@ -74,6 +74,7 @@ end
 
 df_result = CSV.read("data/disc_output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", DataFrame)
 
+ma = maximum(df_result[!,2])
 mi = minimum(df_result[!, 2])
 
 filter!(row -> row.d_s == mi, df_result)
@@ -81,7 +82,7 @@ filter!(row -> row.d_s == mi, df_result)
 CSV.write("data/disc_filter_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result)
 
 begin
-    idxs = values(df_result[16,:])[1] # Use Vector() if number of row entries are large
+    idxs = values(df_result[12,:])[1] # Use Vector() if number of row entries are large
     C_2 = [get_matrix(i,b,m) for i in idxs]
     J = hcat(C_2...)
     display(J)
@@ -91,7 +92,7 @@ begin
     C[2] .= reshape(int_to_matrix(idxs, b, m), m, m)
     P = DigitalNetGenerator(b,m,s,C) 
     pts = genpoints(P)
-    display(pts)
+    #display(pts)
 
     include("NNLD_plots.jl")
     plot_points(pts)
@@ -102,14 +103,15 @@ end
 
 df_result_2 = CSV.read("data/disc_output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", DataFrame)
 
-lp_disc = 0.25
+# lp_disc = 0.25
+lp_disc = ma
 
 filter!(row -> row.d_s == lp_disc, df_result_2)
 
 CSV.write("data/disc_filter_lp_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result_2)
 
 begin
-    idxs = values(df_result_2[13,:])[1] # Use Vector() if number of row entries are large
+    idxs = values(df_result_2[2,:])[1] # Use Vector() if number of row entries are large
     C_2 = [get_matrix(i,b,m) for i in idxs]
     J = hcat(C_2...)
     display(J)

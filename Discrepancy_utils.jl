@@ -11,29 +11,14 @@ vol_h_cl(z, pts::Vector) = count( all(p .<= z) for p in pts ) / length(pts)
 δ(z,pts) = vol_h(z, pts) - vol(z)
 δ_cl(z,pts) = vol_h_cl(z, pts) - vol(z)
 
-# function discr(pts::Vector)
-#     N = length(pts) #sort.by=()
-#     disc = Vector{Float64}()
-#     pts = sort(pts;by=x->x[1]) #sort!(pts)
-#     for i in eachindex(pts)
-#         sort_pts = sort(pts[1:i];by=x->x[2])
-#         for j in 1:i
-#             z = ((i-1)/N,sort_pts[j][2])
-#             push!(disc, abs(δ(z,pts)), abs(δ_cl(z,pts)))
-#             z_1 = ((i-1)/N, 1)
-#             push!(disc, abs(δ(z_1,pts)), abs(δ_cl(z_1,pts)))
-#         end
-#     end
-#     return maximum(disc)
-# end
-
 function discr(pts::Vector)
     N = length(pts) #sort.by=()
     disc = Vector{Float64}()
     pts = sort(pts;by=x->x[1]) #sort!(pts)
     for i in eachindex(pts)
-        for j in 1:N
-            z = ((i-1)/N,(j-1)/N)
+        sort_pts = sort(pts[1:i];by=x->x[2])
+        for j in 1:i
+            z = ((i-1)/N,sort_pts[j][2])
             push!(disc, abs(δ(z,pts)), abs(δ_cl(z,pts)))
             z_1 = ((i-1)/N, 1)
             push!(disc, abs(δ(z_1,pts)), abs(δ_cl(z_1,pts)))
@@ -41,6 +26,21 @@ function discr(pts::Vector)
     end
     return maximum(disc)
 end
+
+# function discr(pts::Vector)
+#     N = length(pts) #sort.by=()
+#     disc = Vector{Float64}()
+#     pts = sort(pts;by=x->x[1]) #sort!(pts)
+#     for i in eachindex(pts)
+#         for j in 1:N
+#             z = ((i-1)/N,(j-1)/N)
+#             push!(disc, abs(δ(z,pts)), abs(δ_cl(z,pts)))
+#             z_1 = ((i-1)/N, 1)
+#             push!(disc, abs(δ(z_1,pts)), abs(δ_cl(z_1,pts)))
+#         end
+#     end
+#     return maximum(disc)
+# end
 
 # begin
 #     b = 2
@@ -88,7 +88,7 @@ function compare_rows_matrix(C1,C2)
 end
 
 function compare_rows_lin_ind(C1,C2)
-    if m ==3
+    if m == 3
         M_1 = zeros(Int64, m,m)
         M_1[1,:] = C[1][1,:]
         M_1[2,:] = C[1][2,:]
@@ -111,6 +111,99 @@ function compare_rows_lin_ind(C1,C2)
             return true
         end
         return false
+    
+    elseif m == 4
+        M_1 = zeros(Int64, m,m)
+        M_1[1,:] = C[1][1,:]
+        M_1[2,:] = C[1][2,:]
+        M_1[3,:] = C[1][3,:]
+        M_1[4,:] = C[2][1,:]
+        M_1
+        det(M_1) % b == 0
+        
+        M_2 = zeros(Int64, m,m)
+        M_2[1,:] = C[2][1,:]
+        M_2[2,:] = C[2][2,:]
+        M_2[3,:] = C[2][3,:]
+        M_2[4,:] = C[1][1,:]
+        M_2
+        det(M_2) % b == 0
+
+        M_3 = zeros(Int64, m,m)
+        M_3[1,:] = C[1][1,:]
+        M_3[2,:] = C[1][2,:]
+        M_3[3,:] = C[2][1,:]
+        M_3[4,:] = C[2][2,:]
+        M_3
+        det(M_3) % b == 0
+        
+        if det(M_1) % b == 0
+            return true
+        end
+        
+        if det(M_2) % b == 0
+            return true
+        end
+
+        if det(M_3) % b == 0
+            return true
+        end
+        return false
+        
+    elseif m == 5
+        M_1 = zeros(Int64, m,m)
+        M_1[1,:] = C[1][1,:]
+        M_1[2,:] = C[1][2,:]
+        M_1[3,:] = C[1][3,:]
+        M_1[4,:] = C[1][4,:]
+        M_1[5,:] = C[2][1,:]
+        M_1
+        det(M_1) % b == 0
+        
+        M_2 = zeros(Int64, m,m)
+        M_2[1,:] = C[2][1,:]
+        M_2[2,:] = C[2][2,:]
+        M_2[3,:] = C[2][3,:]
+        M_2[4,:] = C[2][4,:]
+        M_2[5,:] = C[1][1,:]
+        M_2
+        det(M_2) % b == 0
+
+        M_3 = zeros(Int64, m,m)
+        M_3[1,:] = C[1][1,:]
+        M_3[2,:] = C[1][2,:]
+        M_3[3,:] = C[2][1,:]
+        M_3[4,:] = C[2][2,:]
+        M_3[5,:] = C[2][3,:]
+        M_3
+        det(M_3) % b == 0
+
+        M_4 = zeros(Int64, m,m)
+        M_4[1,:] = C[1][1,:]
+        M_4[2,:] = C[1][2,:]
+        M_4[3,:] = C[1][3,:]
+        M_4[4,:] = C[2][1,:]
+        M_4[5,:] = C[2][2,:]
+        M_4
+        det(M_4) % b == 0
+        
+        if det(M_1) % b == 0
+            return true
+        end
+        
+        if det(M_2) % b == 0
+            return true
+        end
+
+        if det(M_3) % b == 0
+            return true
+        end
+
+        if det(M_4) % b == 0
+            return true
+        end
+
+        return false 
     end
 end
 
