@@ -11,7 +11,7 @@ fn_postfix = "id"
 begin
     b = 2
     s = 2
-    m = 4
+    m = 5
     N = b^m
 
     bf = float(b)
@@ -27,7 +27,7 @@ begin
     @assert last(matrix_range) >= b^(m*(m-1)) "zero rows"
 
     if s==2
-        C = [diagm(0 => fill(1,m)),zeros(Int,m,m)]
+        C = [diagm(0 => fill(1,m)),zeros(BigInt,m,m)]
     
         df = DataFrame(i1 = Int64[], d_s = Float64[])
         CSV.write("data/disc_output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", df)
@@ -82,13 +82,13 @@ filter!(row -> row.d_s == mi, df_result)
 CSV.write("data/disc_filter_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result)
 
 begin
-    idxs = values(df_result[12,:])[1] # Use Vector() if number of row entries are large
+    idxs = values(df_result[1,:])[1] # Use Vector() if number of row entries are large
     C_2 = [get_matrix(i,b,m) for i in idxs]
     J = hcat(C_2...)
     display(J)
     @show idxs
 
-    C = [diagm(0 => fill(1,m)),zeros(Int,m,m)]
+    C = [diagm(0 => fill(1,m)),zeros(BigInt,m,m)]
     C[2] .= reshape(int_to_matrix(idxs, b, m), m, m)
     P = DigitalNetGenerator(b,m,s,C) 
     pts = genpoints(P)
@@ -98,8 +98,7 @@ begin
     plot_points(pts)
 
 end
-
-
+det(C[2])
 
 df_result_2 = CSV.read("data/disc_output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", DataFrame)
 
@@ -111,13 +110,13 @@ filter!(row -> row.d_s == lp_disc, df_result_2)
 CSV.write("data/disc_filter_lp_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result_2)
 
 begin
-    idxs = values(df_result_2[2,:])[1] # Use Vector() if number of row entries are large
+    idxs = values(df_result_2[1,:])[1] # Use Vector() if number of row entries are large
     C_2 = [get_matrix(i,b,m) for i in idxs]
     J = hcat(C_2...)
     display(J)
     @show idxs
 
-    C = [diagm(0 => fill(1,m)),zeros(Int,m,m)]
+    C = [diagm(0 => fill(1,m)),zeros(BigInt,m,m)]
     C[2] .= reshape(int_to_matrix(idxs, b, m), m, m)
     P = DigitalNetGenerator(b,m,s,C) 
     pts = genpoints(P)

@@ -88,15 +88,21 @@ function compare_rows_matrix(C1,C2)
 end
 
 function compare_rows_lin_ind(C1,C2)
-    if m == 3
-        M_1 = zeros(Int64, m,m)
+    if m == 2
+        M_1 = zeros(BigInt, m,m)
+        M_1[1,:] = C[1][1,:]
+        M_1[2,:] = C[2][1,:]
+        M_1
+        det(M_1) % b == 0
+    elseif m == 3
+        M_1 = zeros(BigInt, m,m)
         M_1[1,:] = C[1][1,:]
         M_1[2,:] = C[1][2,:]
         M_1[3,:] = C[2][1,:]
         M_1
         det(M_1) % b == 0
     
-        M_2 = zeros(Int64, m,m)
+        M_2 = zeros(BigInt, m,m)
         M_2[1,:] = C[2][1,:]
         M_2[2,:] = C[2][2,:]
         M_2[3,:] = C[1][1,:]
@@ -113,7 +119,7 @@ function compare_rows_lin_ind(C1,C2)
         return false
     
     elseif m == 4
-        M_1 = zeros(Int64, m,m)
+        M_1 = zeros(BigInt, m,m)
         M_1[1,:] = C[1][1,:]
         M_1[2,:] = C[1][2,:]
         M_1[3,:] = C[1][3,:]
@@ -121,7 +127,7 @@ function compare_rows_lin_ind(C1,C2)
         M_1
         det(M_1) % b == 0
         
-        M_2 = zeros(Int64, m,m)
+        M_2 = zeros(BigInt, m,m)
         M_2[1,:] = C[2][1,:]
         M_2[2,:] = C[2][2,:]
         M_2[3,:] = C[2][3,:]
@@ -129,7 +135,7 @@ function compare_rows_lin_ind(C1,C2)
         M_2
         det(M_2) % b == 0
 
-        M_3 = zeros(Int64, m,m)
+        M_3 = zeros(BigInt, m,m)
         M_3[1,:] = C[1][1,:]
         M_3[2,:] = C[1][2,:]
         M_3[3,:] = C[2][1,:]
@@ -151,7 +157,7 @@ function compare_rows_lin_ind(C1,C2)
         return false
         
     elseif m == 5
-        M_1 = zeros(Int64, m,m)
+        M_1 = zeros(BigInt, m,m)
         M_1[1,:] = C[1][1,:]
         M_1[2,:] = C[1][2,:]
         M_1[3,:] = C[1][3,:]
@@ -160,7 +166,7 @@ function compare_rows_lin_ind(C1,C2)
         M_1
         det(M_1) % b == 0
         
-        M_2 = zeros(Int64, m,m)
+        M_2 = zeros(BigInt, m,m)
         M_2[1,:] = C[2][1,:]
         M_2[2,:] = C[2][2,:]
         M_2[3,:] = C[2][3,:]
@@ -169,7 +175,7 @@ function compare_rows_lin_ind(C1,C2)
         M_2
         det(M_2) % b == 0
 
-        M_3 = zeros(Int64, m,m)
+        M_3 = zeros(BigInt, m,m)
         M_3[1,:] = C[1][1,:]
         M_3[2,:] = C[1][2,:]
         M_3[3,:] = C[2][1,:]
@@ -178,7 +184,7 @@ function compare_rows_lin_ind(C1,C2)
         M_3
         det(M_3) % b == 0
 
-        M_4 = zeros(Int64, m,m)
+        M_4 = zeros(BigInt, m,m)
         M_4[1,:] = C[1][1,:]
         M_4[2,:] = C[1][2,:]
         M_4[3,:] = C[1][3,:]
