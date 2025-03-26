@@ -9,9 +9,9 @@ fn_postfix = "id"
 
 
 begin
-    b = 2
+    b = 3
     s = 2
-    m = 5
+    m = 4
     N = b^m
 
     bf = float(b)
@@ -120,7 +120,7 @@ begin
     C[2] .= reshape(int_to_matrix(idxs, b, m), m, m)
     P = DigitalNetGenerator(b,m,s,C) 
     pts = genpoints(P)
-    display(pts)
+    #display(pts)
 
     include("NNLD_plots.jl")
     plot_points(pts)
