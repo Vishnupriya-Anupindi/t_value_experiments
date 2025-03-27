@@ -9,9 +9,9 @@ fn_postfix = "id"
 
 
 begin
-    b = 3
+    b = 2
     s = 2
-    m = 4
+    m = 5
     N = b^m
 
     bf = float(b)
