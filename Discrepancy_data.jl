@@ -82,7 +82,7 @@ filter!(row -> row.d_s == mi, df_result)
 CSV.write("data/disc_filter_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ",df_result)
 
 begin
-    idxs = values(df_result[1,:])[1] # Use Vector() if number of row entries are large
+    idxs = values(df_result[12,:])[1] # Use Vector() if number of row entries are large
     C_2 = [get_matrix(i,b,m) for i in idxs]
     J = hcat(C_2...)
     display(J)
@@ -99,6 +99,22 @@ begin
 
 end
 det(C[2])
+
+begin
+    #guess_4 = 1 + 2^5 + 2^9 + 2^10 + 2^12 + 2^15
+    #guess = 1 + 2^6 + 2^12 + 2^16 + 2^18 + 2^20 + 2^24
+    guess = 1 + 2^6 + 2^12 + 2^18 + 2^20 + 2^24
+    C = [diagm(0 => fill(1,m)),zeros(BigInt,m,m)]
+    C[2] .= reshape(int_to_matrix(guess, b, m), m, m)
+    display(C[2])
+    P = DigitalNetGenerator(b,m,s,C) 
+    pts = genpoints(P)
+    d_s = discr(pts)
+    display(d_s)
+    plot_points(pts)
+end
+get_matrix(guess,b,m)
+
 
 df_result_2 = CSV.read("data/disc_output_b$(b)_m$(m)_s$(s)$(fn_postfix).csv ", DataFrame)
 
